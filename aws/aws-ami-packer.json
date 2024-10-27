@@ -1,1 +1,36 @@
 
+{
+    "variables": {
+      "aws_region": "us-east-1",
+      "ami_name": "packer-nginx-demo-{{timestamp}}"
+    },
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "region": "{{user `aws_region`}}",
+        "source_ami_filter": {
+          "filters": {
+            "virtualization-type": "hvm",
+            "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+            "root-device-type": "ebs"
+          },
+          "owners": ["099720109477"],
+          "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "{{user `ami_name`}}",
+        "ami_description": "An AMI with Nginx installed using Packer",
+        "tags": {
+          "Name": "packer-nginx-demo",
+          "Tool": "Packer"
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "script": "scripts/install_nginx.sh"
+      }
+    ]
+  }
